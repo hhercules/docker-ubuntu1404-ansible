@@ -24,10 +24,10 @@ RUN apt-get update \
     && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
     && apt-get clean
 # Git Clone test tag version
-RUN git clone --branch v3.4.1 https://github.com/willthames/ansible-lint.git \
-    && echo "export PYTHONPATH=$PYTHONPATH:`pwd`/ansible-lint/lib" >> ~/.bashrc \
-    && echo "export PATH=$PATH:`pwd`/ansible-lint/bin" >> ~/.bashrc
-
+RUN cd /opt && git clone --branch v3.4.1 https://github.com/willthames/ansible-lint.git \
+    && cd /usr/local/bin \
+    && printf '#!/bin/bash\n\nexport PYTHONPATH=$PYTHONPATH:/opt/ansible-lint/lib\n\n/opt/ansible-lint/bin/ansible-lint "$@"\n' > ansible-lint \
+    && chmod +x ansible-lint
 
 # Install Ansible inventory file
 RUN echo "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
